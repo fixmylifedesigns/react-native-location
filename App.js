@@ -4,12 +4,16 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import stolenreport from "./components/stolenbikes.json";
 import ulock from "./components/ulock.png";
-import reactMarker from './components/reactlogo.png'
+import reactMarker from "./components/reactlogo.png";
 
 export default function App() {
   const [geoLocation, setGeoLocation] = useState({
     ready: false,
-    error: null
+    error: null,
+    where: {
+      lat: 0,
+      lng: 0
+    }
   });
 
   useEffect(() => {
@@ -18,7 +22,7 @@ export default function App() {
       timeOut: 20000,
       maximumAge: 60 * 60 * 24
     };
-    setGeoLocation({ ready: false, error: null });
+    // setGeoLocation({ ready: false, error: null });
     navigator.geolocation.getCurrentPosition(
       this.geoSuccess,
       this.geoFailure,
@@ -35,7 +39,13 @@ export default function App() {
     });
   };
   geoFailure = err => {
-    setGeoLocation({ error: err.message });
+    setGeoLocation({
+      error: err.message,
+      where: {
+        lat: 0,
+        lng: 0
+      }
+    });
   };
 
   return (
@@ -45,8 +55,8 @@ export default function App() {
         provider={PROVIDER_GOOGLE}
         showsUserLocation
         initialRegion={{
-          latitude: 40.705354,
-          longitude: -73.924418,
+          latitude: geoLocation.where.lat,
+          longitude: geoLocation.where.lng,
           latitudeDelta: 0.0422,
           longitudeDelta: 0.0221
         }}
@@ -56,11 +66,11 @@ export default function App() {
             <MapView.Marker
               key={location.id}
               coordinate={{ latitude: location.lat, longitude: location.lng }}
-              title={"title"}
-              description={"description"}
-              // image={ulock}
+              title={"React Native"}
+              description={`latitude:  ${location.lat}, longitude: ${location.lng} `}
             >
-              <Image source={ulock} style={styles.img} />
+              {/* <Image source={ulock} style={styles.img} /> */}
+              <Image source={reactMarker} style={styles.img} />
             </MapView.Marker>
           );
         })}
